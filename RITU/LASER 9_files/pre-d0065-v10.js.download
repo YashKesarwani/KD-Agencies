@@ -1,0 +1,165 @@
+function reqFormGATrack(eventCategory, eventAction, eventLabel, cdMisc) {
+  imgtm.push( { 'event' : 'IMEvent', 'eventCategory' : eventCategory, 'eventAction' : eventAction, 'eventLabel' : eventLabel, 'CD_Additional_Data' : cdMisc});
+}
+function getparamVal(e, n) {
+  if (e > '') {
+    var i = '|' + e + '|',
+    t = new RegExp('.*?\\|' + n + '=([^|]*).*|.*');
+    return i.replace(t, '$1')
+  }
+  return ''
+}
+
+function getEventLabel() {
+    var e = usercookie.getCookie("ImeshVisitor")
+      , t = (usercookie.getParameterValue(e, "iso"),
+    usercookie.getParameterValue(e, "uv"))
+      , r = currentISO()
+      , o = "" === e ? "Unidentified" : "V" === t ? "Verified" : "Unverified"
+      , i = "in" === r.toLowerCase() ? "Indian" : "Foreign";
+    return i += "|" + o + "|" + labelNEC(r)
+}
+
+function getCartCookie(e) {
+  var t = e + '=';
+  return document.cookie.length > 0 && (offset = document.cookie.indexOf(t), - 1 != offset) ? (offset += t.length, end = document.cookie.indexOf(';', offset), - 1 == end && (end = document.cookie.length), unescape(document.cookie.substring(offset, end)))  : ''
+}
+
+function readCookie(e) {
+var i = e + "=";
+return document.cookie.length > 0 && (offset = document.cookie.indexOf(i),-1 != offset) ? (offset += i.length, end = document.cookie.indexOf(";", offset),-1 == end && (end = document.cookie.length),unescape(document.cookie.substring(offset, end))) : "v4iilex" == e ? readCookie("v4iil") : ""
+}
+
+var ispnsnodisp=0;
+var is_cookie_imesh_p_imes = getCartCookie("ImeshVisitor");
+var glid='';
+if(is_cookie_imesh_p_imes != "") {
+    
+    glid = getparamVal(is_cookie_imesh_p_imes, "glid");
+}
+
+var is_cookie_imesh_p = getCartCookie("iploc");
+
+var cntry_iso_fcp='IN';
+if(is_cookie_imesh_p != ""){
+cntry_iso_fcp = getparamVal(is_cookie_imesh_p, "gcniso");
+}
+
+
+
+function open_enq_bl_pop(fmenq_hash)
+{
+    var cd_misc = "ctaName=" + fmenq_hash.ctaName + "|ctaType="+fmenq_hash.ctaType+"|PT=" + fmenq_hash.pageType + "|Section=" + fmenq_hash.section + "|Position=" + fmenq_hash.position + "|ScriptVer=" + fmenq_hash.scriptVersion + "|compRank="+fmenq_hash.compRank+"|modId=" + fmenq_hash.modId;
+    
+   var eventLabel = getEventLabel();
+   reqFormGATrack('Send Enquiry', 'CTA Clicked', eventLabel,cd_misc,'IMEvent');
+   
+    if(typeof OpenForm == "undefined" || is_loaded_blenqpost_js == 0){
+    is_loaded_blenqpost_js=1;
+     $.ajax({
+		   type: "GET",
+		   url: bljsfile,
+		   success: function(){
+		   setTimeout(function(){ try {checkBlloaded();} catch (e) {}}, 50);
+            $('.enq_blform').removeClass('FM_ds4');
+               OpenForm(fmenq_hash);
+		   },
+		   dataType: "script",
+		   cache: true
+		});
+    }else{
+            OpenForm(fmenq_hash); 
+    }
+    
+}
+
+function check_pnsno_display(fmenq_hash){
+    if(is_cookie_imesh_p_imes == ""){
+    if(fcp_flag == 1 && ispnsnodisp == 0){
+        signIn();
+    }else {    
+        open_enq_bl_pop(fmenq_hash);
+    }
+    }else{ 
+    open_enq_bl_pop(fmenq_hash);
+    }
+    
+    ispnsnodisp=1;
+    var iso_cntry='0';
+    if(cntry_iso_fcp != "IN") iso_cntry='+91-';
+        
+        
+    if(document.getElementById('header_pnsno') != "" && document.getElementById('header_pnsno') != null &&  document.getElementById('header_pnsno').getAttribute('data-pnsno') != ""){
+    document.getElementById("header_pnsno").innerHTML= '<span class="FM_bo1 ">Call </span>' +iso_cntry + document.getElementById('header_pnsno').getAttribute('data-pnsno');
+    $('#header_pnsno').removeClass('FM_c4');
+    $('#header_pnsno').addClass('FM_C0');   
+    
+    }
+
+        if(document.getElementById('sticky_pnsno') != "" && document.getElementById('sticky_pnsno') != null && document.getElementById('sticky_pnsno').getAttribute('data-pnsno') != ""){
+    document.getElementById("sticky_pnsno").innerHTML= 'Call ' +iso_cntry + document.getElementById('sticky_pnsno').getAttribute('data-pnsno');
+    } 
+    
+    if(document.getElementById('footerPNS') != "" && document.getElementById('footerPNS') != null && document.getElementById('footerPNS').getAttribute('data-pnsno') != ""){
+    document.getElementById("footerPNS").innerHTML= iso_cntry + document.getElementById('footerPNS').getAttribute('data-pnsno');
+    }
+   
+if(document.getElementById('ResponseRate_header') != "" && document.getElementById('ResponseRate_header') != null){
+$('#ResponseRate_header').removeClass('FM_ds4');
+    $('#ResponseRate_header').addClass('FM_Db'); 
+}
+   
+}
+function changeMainImage(divid,imgurl,videoclas,imagdiv,viddivhas,prdhashIMG,totalIM){
+    
+    document.getElementById(divid).src=imgurl;
+    
+    totalIM=totalIM+1;
+    
+    var allImagesActiv = prdhashIMG;
+    allImagesActiv = allImagesActiv.slice(0, -1);
+    
+    for(var remCls=0 ; remCls < totalIM ;remCls++){
+        
+        allImagesActiv1 = allImagesActiv+remCls;
+        
+        $('#'+allImagesActiv1).removeClass('FM_PTnalActv');
+      
+    }
+    
+            var imagDIV=imagdiv.replace("#","");
+    
+    if(videoclas != ""){
+    
+        $(imagdiv).addClass(videoclas);        
+
+        var vidh = document.getElementById(viddivhas).getAttribute("onclick"); 
+        
+        document.getElementById(imagDIV).setAttribute("onclick",vidh);
+    
+    }else{
+        $(imagdiv).removeClass('FM_pIv');
+        var onclCil = document.getElementById(prdhashIMG).getAttribute("onclick");
+        document.getElementById(imagDIV).setAttribute("onclick",onclCil);
+    }
+    $('#'+prdhashIMG).addClass('FM_PTnalActv');
+    
+    
+}
+function openchildts1(e) {
+  if (browserName = navigator.appName, browserVer = parseInt(navigator.appVersion), condition = !(browserName.indexOf('Explorer') >= 0 && browserVer < 4 || browserName.indexOf('Netscape') >= 0 && browserVer < 2), 1 == condition ? CanAnimate = !0 : CanAnimate = !1, CanAnimate) {
+    var t,
+    n,
+    o,
+    a;
+    n = 'Microsoft Internet Explorer' == browserName ? '650px' : '653px',
+    t = 0.8 * screen.height * 0.85,
+    o = 0.2 * screen.height * 0.8,
+    a = 0.402 * screen.width,
+    msgWindow = window.open('', 'subwindow', 'toolbar=no,location=no,directories=no,status=yes,scrollbars=yes,menubar=no,resizable=yes,top=' + o + ',left=' + a + ',width=' + n + ',height=' + t),
+    msgWindow.focus(),
+    msgWindow.location.href = e
+  } else {
+    msgWindow = window.open(e, 'subwindow', 'toolbar=no,location=no,directories=no,status=yes,scrollbars=yes,menubar=no,resizable=yes,width=510,height=420')
+  }
+}
